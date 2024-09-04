@@ -1,0 +1,65 @@
+import React, { useState } from 'react'
+import Note from './Note'
+import { webDevTopics } from '../Utils/data'
+const Board = () => {
+    const[items,setItems]=useState([])
+    const dragOver=(e)=>{
+        e.preventDefault()
+    }
+    const handleDrop=(e)=>{
+        const title=e.dataTransfer.getData('title')
+        const description=e.dataTransfer.getData('description')
+        console.log(title)
+        console.log(description)
+        setItems([...items,{title,description}])
+    }
+
+  return (
+    <div style={{display:'flex'}}>
+        <div style={{ flex:2, minHeight:'100vh',padding:'20px',background:"grey",display:'flex',flexWrap:'wrap'}} >
+{
+    webDevTopics.map((data)=>{
+      return  (
+            <Note key={data.id} {...data}  />
+        )
+    })
+}    </div>
+<div style={{flex:1}}  droppable onDragOver={dragOver} onDrop={(e)=>handleDrop(e)}>
+<h2 style={{textAlign:"center",margin:'10px'}}>selected</h2>
+{
+    items.length>0 && items.map((item)=>{
+        return(
+            <Note {...item} />
+        )
+    })
+}
+</div>
+    </div>
+  )
+}
+
+export default Board
+---------------------------------------
+
+import React from 'react'
+
+const Note = ({id,title,description}) => {
+    const handleDrag=(e,id,title,description)=>{
+        console.log(id,title,description)
+        e.dataTransfer.setData('title',title)
+        e.dataTransfer.setData('description',description)
+
+        
+
+    }
+  return (
+    <div draggable onDragStart={(e)=>handleDrag(e,id,title,description)}  style={{maxWidth:'350px',minWidth:'200px',minHeight:'250px',display:'flex',flexDirection:'column',justifyContent:
+'center',alignItems:'center',border:'2px solid black',padding:'10px',borderRadius:'10px',background:'white',color:'#253529'}}>
+      <h1 style={{textAlign:'center',margin:'10px'}}>{title}</h1>
+      <p style={{textAlign:'justify',color:'#808080'}}>{description}</p>
+    </div>
+  )
+}
+
+export default Note
+
