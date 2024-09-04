@@ -1,0 +1,126 @@
+import React, { useEffect } from 'react'
+import Note from './Note'
+import  './Board.css'
+import { useState } from 'react'
+const Board = () => {
+    const initialState=[
+        {id:1,content:'the lorem ashtas fas dasdffoaisfdjf sddfoais fasffoasidfoaiu sdffiouas odfuoasiudfoasiudfaos dfsoidfsdifsufdnff asidofas fiisaodffu sdsdfjasoidfu sdfoiausfdf faoisfhaio fd - akash',x:'50px',y:'50px'},
+        {id:2,content:'the lorem ashtas fas dasdffoaisfdjf sddfoais fasffoasidfoaiu sdffiouas odfuoasiudfoasiudfaos dfsoidfsdifsufdnff asidofas fiisaodffu sdsdfjasoidfu sdfoiausfdf faoisfhaio fd - akash',x:'150px',y:'150px'},
+        {id:3,content:'the lorem ashtas fas dasdffoaisfdjf sddfoais fasffoasidfoaiu sdffiouas odfuoasiudfoasiudfaos dfsoidfsdifsufdnff asidofas fiisaodffu sdsdfjasoidfu sdfoiausfdf faoisfhaio fd - akash',x:'250px',y:'250px'}
+      ]
+      const [notes, setNotes] = useState(initialState)
+      
+      const handleDragEnd=(id,x,y)=>{
+        console.log(id,x,y)
+        setNotes(prev=>
+            prev.map((note)=>{
+                if(note.id==id){
+                  return  {...note
+                    ,x,y
+                
+                }
+           
+                }else{
+                    return note
+                }
+            })
+        )
+
+
+
+      }
+
+      console.log(notes[0].x)
+      console.log(notes[0].y)
+    
+  return (
+    <div 
+    
+     className=' h-screen relative board '>
+        {
+            notes.length>0 ? notes.map((note)=>{
+                return(
+
+                     <Note key={note.id} {...note} onDragEnd={handleDragEnd} />      
+                )
+            }):null
+        }
+
+    </div>
+  )
+}
+
+export default Board
+
+
+
+
+  -----------------------------------
+
+  import React, { useRef } from 'react'
+import  './Note.css'
+
+
+const Note = ({id,content,x,y,onDragEnd}) => {
+    const noteRef=useRef(null)
+    const offsetX = useRef(0)
+    const offsetY = useRef(0)
+
+    const handleMouseDown=(e)=>{
+        console.log('mouse down')
+        const noteElem= noteRef.current
+        console.log(noteElem)
+    
+        if(noteElem){
+            // noteElem.style.zIndex=1000
+
+            const rect=noteElem.getBoundingClientRect()
+            offsetX.current = e.clientX - rect.left
+            offsetY.current = e.clientY - rect.top
+
+           
+         
+            
+        }
+        e.preventDefault()
+
+        const handleMouseMove=(e)=>{
+            const newX=e.clientX-offsetX.current+'px'
+            const newY=e.clientY-offsetY.current+'px'
+            noteElem.style.left=newX
+            noteElem.style.top=newY
+        }
+
+        const handleMouseUp=()=>{
+            noteElem.removeEventListener('mouseup',handleMouseUp)
+            noteElem.removeEventListener('mousemove',handleMouseMove)
+            onDragEnd(id,noteElem.style.left,noteElem.style.top)
+
+            // if (noteElem) {
+            //     const rect = noteElem.getBoundingClientRect();
+            //     onDragEnd(id, rect.left, rect.top);
+            //   }
+        }
+        noteElem.addEventListener('mousemove',handleMouseMove)
+        noteElem.addEventListener('mouseup',handleMouseUp)
+    }
+
+  return (
+    <div  
+    onMouseDown={handleMouseDown}
+    // onMouseUp={()=>onDragEnd(id,offsetX.current,offsetY.current)}
+
+    ref={noteRef}
+    style={{
+        position: 'absolute', 
+        left: `${x}`,       
+        top: `${y}`, 
+        background:'white'       
+      }}
+     className='m-12 max-h-72 max-w-64 p-5 rounded border shadow-2xl '>
+        <p>{content}</p>
+    </div>
+  )
+}
+export default Note
+
